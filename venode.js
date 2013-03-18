@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 /*global process, console */
 var mongodb = require("mongodb").MongoClient,
 	dsn = "", // From cli
@@ -36,6 +38,10 @@ process.stdin.on('end', function () {
 	finalCommand = extractCommand.exec(query)[1];
 	finalQuery = extractQuery.exec(query)[1];
 
+	if (finalQuery === null || finalQuery === "") {
+		finalQuery = {};
+	}
+
 	mongodb.connect(dsn, function (err, db) {
 
 		if (err) {
@@ -50,9 +56,11 @@ process.stdin.on('end', function () {
 			}
 
 			// convert query to object
-			finalQuery = JSON.parse(finalQuery);
-			console.log("finalQuery", finalQuery);
-			console.log("Executing", finalQuery, "on", finalCollection, finalCommand);
+			if (typeof finalQuery === "string") {
+				finalQuery = JSON.parse(finalQuery);
+			}
+
+			console.log("Executing", finalQuery, "on", finalCollection, finalCommand, "\n----\n");
 
 			collection[finalCommand](finalQuery, function (err, result) {
 				var r;

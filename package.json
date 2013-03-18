@@ -10,7 +10,10 @@
 			"name": "Robert Mitchell",
 			"email": "robert.mitchell.iii@gmail.com"
 		} 
-	]
+	],
+	"dependencies" : {
+		"mongodb"   :  "*"
+	},
 	"bin": { "venode" : "./venode.js" },
 	"repository": { "type" : "git", "url" : "http://github.com/tingham/venode.git" },
 	"description": "A command line interface for the NodeJS MongoDB driver.",
