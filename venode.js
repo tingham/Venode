@@ -29,6 +29,8 @@ process.stdin.on('end', function () {
 		extractCollection = /^db\.(\w+)/,
 		extractCommand = /\.(\w+)\(/,
 		extractQuery = /\((.*)\)/;
+	
+	console.log("here");
 
 	finalCollection = extractCollection.exec(query)[1];
 	finalCommand = extractCommand.exec(query)[1];
@@ -47,17 +49,14 @@ process.stdin.on('end', function () {
 				return;
 			}
 
+			// convert query to object
+			finalQuery = JSON.parse(finalQuery);
+			console.log("finalQuery", finalQuery);
 			console.log("Executing", finalQuery, "on", finalCollection, finalCommand);
 
 			collection[finalCommand](finalQuery, function (err, result) {
 				var r;
 
-				result.toArray(function (err, docs) {
-					console.log("Error", err);
-					console.log("Docs", docs);
-				});
-
-				/*
 				result.each(function (err, doc) {
 					if (err) {
 						console.log("Fail");
@@ -65,13 +64,16 @@ process.stdin.on('end', function () {
 					}
 
 					console.log(doc);
+
+					// exit if doc is null
+					// cursor has been exhausted
+					if (!doc) {
+						process.exit();
+					}
 				});
-				*/
 
 				return;
-
 			});
 		});
 	});
-
 });
