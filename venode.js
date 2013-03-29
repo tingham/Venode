@@ -1,79 +1,32 @@
 /*global process, console */
-var mongodb = require("mongodb").MongoClient,
-	dsn = "", // From cli
-	query = ""; // From cli
+var venode = require("./venode-lib.js"),
+	program = require("commander");
 
-process.argv.forEach(
-	function (val, index, array) {
-		"use strict";
-		if (val.indexOf("--dsn") > -1) {
-			dsn = val.split("=")[1];
-		}
+program
+	.version("0.0.1")
+	.option("-d, --dsn [dsn]", "The DSN of the Mongo database, e.g., mongodb://localhost/test")
+	.option("-q, --query [query]", "The query text to execute on the server")
+	.option("--pretty", "Formats the text in the style of console.log()")
+	.option("--colors", "Adds color output when using --pretty")
+	.parse(process.argv);
+
+// check for required params
+if (!program.dsn || !program.query) {
+	// print help and return
+	program.help();
+}
+
+// the magic happens here
+venode.executeQuery(program.dsn, program.query, function (err, results) {
+	"use strict";
+	if (err) {
+		// done
+		console.log("error connecting to mongo: " + err);
+		process.exit();
+	} else {
+		// optionally format and colorize if flag is set
+		results = program.pretty ? venode.prettyPrint(results, program.colors) : JSON.stringify(results);
+		process.stdout.write(results);
+		process.exit();
 	}
-);
-
-process.stdin.resume();
-process.stdin.setEncoding('utf8');
-
-process.stdin.on('data', function (chunk) {
-	"use strict";
-	query += chunk;
-});
-
-process.stdin.on('end', function () {
-	"use strict";
-	var commandUri = [],
-		finalCollection = "",
-		finalCommand = "",
-		finalQuery = "",
-		extractCollection = /^db\.(\w+)/,
-		extractCommand = /\.(\w+)\(/,
-		extractQuery = /\((.*)\)/;
-	
-	console.log("here");
-
-	finalCollection = extractCollection.exec(query)[1];
-	finalCommand = extractCommand.exec(query)[1];
-	finalQuery = extractQuery.exec(query)[1];
-
-	mongodb.connect(dsn, function (err, db) {
-
-		if (err) {
-			console.log("Fail");
-			return;
-		}
-
-		db.collection(finalCollection, function (err, collection) {
-			if (err) {
-				console.log("Fail");
-				return;
-			}
-
-			// convert query to object
-			finalQuery = JSON.parse(finalQuery);
-			console.log("finalQuery", finalQuery);
-			console.log("Executing", finalQuery, "on", finalCollection, finalCommand);
-
-			collection[finalCommand](finalQuery, function (err, result) {
-				var r;
-
-				result.each(function (err, doc) {
-					if (err) {
-						console.log("Fail");
-						return;
-					}
-
-					console.log(doc);
-
-					// exit if doc is null
-					// cursor has been exhausted
-					if (!doc) {
-						process.exit();
-					}
-				});
-
-				return;
-			});
-		});
-	});
 });

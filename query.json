@@ -1,1 +1,1 @@
-db.entries.find({ "Method": "GetDrugList"})
+db.entries.find({ "Method": "GetDrugList"}).limit(3)
