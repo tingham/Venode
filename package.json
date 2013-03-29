@@ -1,0 +1,28 @@
+{
+	"name": "venode",
+	"homepage": "http://github.com/tingham/venode",
+	"author": {
+		"name": "Thomas Ingham",
+		"url": "http://github.com/tingham"
+	},
+	"contributors": [ 
+		{
+			"name": "Robert Mitchell",
+			"email": "robert.mitchell.iii@gmail.com"
+		} 
+	],
+	"dependencies" : {
+		"mongodb"   :  "*"
+	},
+	"bin": { "venode" : "./venode.js" },
+	"repository": { "type" : "git", "url" : "http://github.com/tingham/venode.git" },
+	"description": "A command line interface for the NodeJS MongoDB driver.",
+	"keywords": ["mongo", "development", "command line", "interface", "terminal"],
+	"version": "0.0.1",
+	"preferGlobal" : "true",
+	"licenses": [{
+		"type": "MIT",
+		"url": "http://rem.mit-license.org"
+	}],
+	"main": "./venode"
+}

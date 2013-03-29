@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 /*global process, console */
 var venode = require("./venode-lib.js"),
 	program = require("commander");
@@ -20,7 +22,7 @@ if (!program.dsn || !program.query) {
 venode.executeQuery(program.dsn, program.query, function (err, results) {
 	"use strict";
 	if (err) {
-		// done
+		// unable to connect
 		console.log("error connecting to mongo: " + err);
 		process.exit();
 	} else {
@@ -30,3 +32,4 @@ venode.executeQuery(program.dsn, program.query, function (err, results) {
 		process.exit();
 	}
 });
+
